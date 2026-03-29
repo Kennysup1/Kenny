@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kenny House Price Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            background: #f0f2f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c3e50; text-align: center; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover { background: #2980b9; }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #eafaf1;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 24px;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Kenny House Price Predictor</h1>
+        <p>Enter the house size to get a price prediction!</p>
+        <form action="/predict" method="POST">
+            <input type="number" name="size" 
+                   placeholder="Enter house size (sq ft) e.g. 1050" 
+                   required>
+            <button type="submit">Predict Price</button>
+        </form>
+        {% if prediction %}
+        <div class="result">
+            A {{ size }} sq ft house costs: <strong>{{ prediction }}</strong>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
