@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kenny AI App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        .navbar { background: #2c3e50; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { color: white; font-size: 20px; }
+        .navbar a { color: white; text-decoration: none; margin-left: 15px; padding: 8px 16px; border-radius: 6px; background: #3498db; }
+        .navbar a:hover { background: #2980b9; }
+        .hero { text-align: center; padding: 100px 20px; }
+        .hero h1 { font-size: 48px; color: #2c3e50; margin-bottom: 20px; }
+        .hero p { font-size: 20px; color: #7f8c8d; margin-bottom: 40px; }
+        .btn { padding: 15px 40px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; margin: 10px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-secondary { background: #2c3e50; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .features { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .feature { background: white; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .feature h3 { color: #2c3e50; margin-bottom: 10px; }
+        .feature p { color: #7f8c8d; }
+        .icon { font-size: 40px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🤖 Kenny AI</h1>
+        <div>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+    </div>
+    <div class="hero">
+        <h1>Welcome to Kenny AI 🤖</h1>
+        <p>Your personal AI powered web application</p>
+        <a href="/register" class="btn btn-primary">Get Started</a>
+        <a href="/login" class="btn btn-secondary">Login</a>
+    </div>
+    <div class="features">
+        <div class="feature">
+            <div class="icon">🏠</div>
+            <h3>House Price Predictor</h3>
+            <p>Predict house prices using AI</p>
+        </div>
+        <div class="feature">
+            <div class="icon">💬</div>
+            <h3>Sentiment Analyzer</h3>
+            <p>Analyze text sentiment in real time</p>
+        </div>
+        <div class="feature">
+            <div class="icon">📈</div>
+            <h3>Stock Predictor</h3>
+            <p>Predict stock prices with LSTM</p>
+        </div>
+    </div>
+</body>
+</html>
