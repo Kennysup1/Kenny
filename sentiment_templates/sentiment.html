@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kenny Sentiment Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #7f8c8d; margin-bottom: 25px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat { padding: 20px; border-radius: 10px; text-align: center; }
+        .stat.positive { background: #eafaf1; border: 2px solid #27ae60; }
+        .stat.negative { background: #fdedec; border: 2px solid #e74c3c; }
+        .stat.neutral { background: #fef9e7; border: 2px solid #f1c40f; }
+        .stat h2 { font-size: 36px; }
+        .stat.positive h2 { color: #27ae60; }
+        .stat.negative h2 { color: #e74c3c; }
+        .stat.neutral h2 { color: #f39c12; }
+        .stat p { color: #7f8c8d; }
+        textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; height: 100px; resize: none; }
+        button { padding: 12px 24px; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .btn-analyze { background: #3498db; color: white; width: 100%; }
+        .btn-clear { background: #e74c3c; color: white; float: right; }
+        .btn-analyze:hover { background: #2980b9; }
+        .result { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; font-size: 18px; text-align: center; }
+        .result.Positive { background: #eafaf1; color: #27ae60; }
+        .result.Negative { background: #fdedec; color: #e74c3c; }
+        .result.Neutral { background: #fef9e7; color: #f39c12; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #3498db; color: white; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge.Positive { background: #eafaf1; color: #27ae60; }
+        .badge.Negative { background: #fdedec; color: #e74c3c; }
+        .badge.Neutral { background: #fef9e7; color: #f39c12; }
+        .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💬 Kenny Sentiment Dashboard</h1>
+        <p class="subtitle">Analyze the sentiment of any text in real time!</p>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat positive">
+                <h2 id="pos-count">{{ positive }}</h2>
+                <p>Positive 😊</p>
+            </div>
+            <div class="stat negative">
+                <h2 id="neg-count">{{ negative }}</h2>
+                <p>Negative 😞</p>
+            </div>
+            <div class="stat neutral">
+                <h2 id="neu-count">{{ neutral }}</h2>
+                <p>Neutral 😐</p>
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="card">
+            <h2 style="margin-bottom:15px">Analyze Text</h2>
+            <textarea id="text-input" placeholder="Type any review or sentence here..."></textarea>
+            <div id="result" class="result"></div>
+            <button class="btn-analyze" onclick="analyze()">Analyze Sentiment</button>
+        </div>
+
+        <!-- Charts -->
+        <div class="card">
+            <h2 style="margin-bottom:15px">Sentiment Overview</h2>
+            <div class="charts">
+                <canvas id="pieChart"></canvas>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="card">
+            <h2 style="margin-bottom:15px; display:inline-block">Recent Reviews</h2>
+            <button class="btn-clear" onclick="clearAll()">Clear All</button>
+            <br><br>
+            <table>
+                <tr>
+                    <th>Text</th>
+                    <th>Sentiment</th>
+                    <th>Score</th>
+                </tr>
+                <tbody id="reviews-table">
+                {% for review in reviews %}
+                <tr>
+                    <td>{{ review.text[:60] }}...</td>
+                    <td><span class="badge {{ review.sentiment }}">{{ review.sentiment }}</span></td>
+                    <td>{{ review.polarity }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let pos = {{ positive }};
+        let neg = {{ negative }};
+        let neu = {{ neutral }};
+
+        const pieChart = new Chart(document.getElementById('pieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Positive', 'Negative', 'Neutral'],
+                datasets: [{
+                    data: [pos, neg, neu],
+                    backgroundColor: ['#27ae60', '#e74c3c', '#f1c40f']
+                }]
+            },
+            options: { plugins: { title: { display: true, text: 'Sentiment Distribution' }}}
+        });
+
+        const barChart = new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Positive', 'Negative', 'Neutral'],
+                datasets: [{
+                    label: 'Count',
+                    data: [pos, neg, neu],
+                    backgroundColor: ['#27ae60', '#e74c3c', '#f1c40f']
+                }]
+            },
+            options: { plugins: { title: { display: true, text: 'Sentiment Counts' }}}
+        });
+
+        function updateCharts() {
+            pieChart.data.datasets[0].data = [pos, neg, neu];
+            barChart.data.datasets[0].data = [pos, neg, neu];
+            pieChart.update();
+            barChart.update();
+        }
+
+        function analyze() {
+            const text = document.getElementById('text-input').value;
+            if (!text) return alert('Please enter some text!');
+
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `text=${encodeURIComponent(text)}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                const result = document.getElementById('result');
+                result.className = `result ${data.sentiment}`;
+                result.style.display = 'block';
+                result.innerHTML = `${data.sentiment} 
+                    ${data.sentiment === 'Positive' ? '😊' : data.sentiment === 'Negative' ? '😞' : '😐'} 
+                    (Score: ${data.polarity})`;
+
+                if (data.sentiment === 'Positive') pos++;
+                else if (data.sentiment === 'Negative') neg++;
+                else neu++;
+
+                document.getElementById('pos-count').textContent = pos;
+                document.getElementById('neg-count').textContent = neg;
+                document.getElementById('neu-count').textContent = neu;
+                updateCharts();
+
+                const tbody = document.getElementById('reviews-table');
+                const row = `<tr>
+                    <td>${text.substring(0, 60)}...</td>
+                    <td><span class="badge ${data.sentiment}">${data.sentiment}</span></td>
+                    <td>${data.polarity}</td>
+                </tr>`;
+                tbody.insertAdjacentHTML('afterbegin', row);
+                document.getElementById('text-input').value = '';
+            });
+        }
+
+        function clearAll() {
+            fetch('/clear', {method: 'POST'})
+            .then(() => location.reload());
+        }
+    </script>
+</body>
+</html>
