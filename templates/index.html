@@ -3,63 +3,147 @@
 <head>
     <title>Kenny House Price Predictor</title>
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
             background: #f0f2f5;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
         }
         .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
-        h1 { color: #2c3e50; text-align: center; }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
         input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
+            font-size: 15px;
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: #3498db;
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 16px;
             cursor: pointer;
+            margin-top: 15px;
         }
         button:hover { background: #2980b9; }
         .result {
-            margin-top: 20px;
+            text-align: center;
             padding: 20px;
             background: #eafaf1;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 24px;
+            border-radius: 8px;
+            font-size: 28px;
             color: #27ae60;
+            font-weight: bold;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover { background: #f8f9fa; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🏠 Kenny House Price Predictor</h1>
-        <p>Enter the house size to get a price prediction!</p>
-        <form action="/predict" method="POST">
-            <input type="number" name="size" 
-                   placeholder="Enter house size (sq ft) e.g. 1050" 
-                   required>
-            <button type="submit">Predict Price</button>
-        </form>
+        <p class="subtitle">Enter house details to get an AI price prediction!</p>
+
+        <div class="card">
+            <form action="/predict" method="POST">
+                <div class="grid">
+                    <div>
+                        <label>House Size (sq ft)</label>
+                        <input type="number" name="size" placeholder="e.g. 1500" required>
+                    </div>
+                    <div>
+                        <label>Number of Bedrooms</label>
+                        <input type="number" name="bedrooms" placeholder="e.g. 3" min="1" max="10" required>
+                    </div>
+                    <div>
+                        <label>Number of Bathrooms</label>
+                        <input type="number" name="bathrooms" placeholder="e.g. 2" min="1" max="6" required>
+                    </div>
+                    <div>
+                        <label>Age of House (years)</label>
+                        <input type="number" name="age" placeholder="e.g. 10" min="1" max="100" required>
+                    </div>
+                </div>
+                <button type="submit">Predict Price</button>
+            </form>
+        </div>
+
         {% if prediction %}
-        <div class="result">
-            A {{ size }} sq ft house costs: <strong>{{ prediction }}</strong>
+        <div class="card">
+            <div class="result">
+                Predicted Price: {{ prediction }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if history %}
+        <div class="card">
+            <h2 style="margin-bottom:15px; color:#2c3e50">Recent Predictions</h2>
+            <table>
+                <tr>
+                    <th>Size (sqft)</th>
+                    <th>Beds</th>
+                    <th>Baths</th>
+                    <th>Age</th>
+                    <th>Predicted Price</th>
+                </tr>
+                {% for item in history %}
+                <tr>
+                    <td>{{ item.size }}</td>
+                    <td>{{ item.bedrooms }}</td>
+                    <td>{{ item.bathrooms }}</td>
+                    <td>{{ item.age }}</td>
+                    <td style="color:#27ae60; font-weight:bold">{{ item.price }}</td>
+                </tr>
+                {% endfor %}
+            </table>
         </div>
         {% endif %}
     </div>
