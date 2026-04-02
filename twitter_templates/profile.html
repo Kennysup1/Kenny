@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@{{ user.username }} - Kenny Social</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #15202b; color: white; }
+        .navbar { background: #192734; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #38444d; }
+        .navbar h1 { color: #1da1f2; font-size: 20px; }
+        .navbar a { color: #8899a6; text-decoration: none; font-size: 14px; }
+        .navbar a:hover { color: #1da1f2; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .profile-card { background: #192734; border: 1px solid #38444d; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .profile-name { font-size: 24px; font-weight: bold; color: white; margin-bottom: 5px; }
+        .profile-handle { color: #8899a6; font-size: 16px; margin-bottom: 10px; }
+        .profile-bio { color: #e7e9ea; margin-bottom: 15px; }
+        .profile-stats { display: flex; gap: 20px; }
+        .stat { color: #8899a6; font-size: 14px; }
+        .stat span { color: white; font-weight: bold; }
+        .post { background: #192734; border: 1px solid #38444d; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .post-time { color: #8899a6; font-size: 13px; margin-bottom: 10px; }
+        .post-content { color: #e7e9ea; font-size: 16px; line-height: 1.5; margin-bottom: 15px; }
+        .post-likes { color: #8899a6; font-size: 14px; }
+        .back-btn { color: #1da1f2; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🐦 Kenny Social</h1>
+        <a href="/">Home</a>
+    </div>
+    <div class="container">
+        <a href="/" class="back-btn">← Back to Home</a>
+        <div class="profile-card">
+            <div class="profile-name">{{ user.username }}</div>
+            <div class="profile-handle">@{{ user.username }}</div>
+            <div class="profile-bio">{{ user.bio }}</div>
+            <div class="profile-stats">
+                <div class="stat"><span>{{ posts|length }}</span> Posts</div>
+                <div class="stat">Joined <span>{{ user.joined.strftime('%B %Y') }}</span></div>
+            </div>
+        </div>
+        {% for post in posts %}
+        <div class="post">
+            <div class="post-time">{{ post.created_at.strftime('%B %d, %Y %H:%M') }}</div>
+            <div class="post-content">{{ post.content }}</div>
+            <div class="post-likes">❤️ {{ post.likes|length }} likes</div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

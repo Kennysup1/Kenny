@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Kenny Social</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #15202b; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: #192734; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; border: 1px solid #38444d; }
+        h1 { text-align: center; color: #1da1f2; margin-bottom: 25px; font-size: 28px; }
+        label { display: block; color: #8899a6; margin-bottom: 5px; font-size: 14px; }
+        input { width: 100%; padding: 12px; background: #253341; border: 1px solid #38444d; border-radius: 6px; font-size: 15px; margin-bottom: 15px; color: white; }
+        input:focus { outline: none; border-color: #1da1f2; }
+        button { width: 100%; padding: 12px; background: #1da1f2; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1991db; }
+        .alert { padding: 10px; border-radius: 6px; margin-bottom: 15px; text-align: center; font-size: 14px; }
+        .alert.danger { background: #2d1f1f; color: #e0245e; border: 1px solid #e0245e; }
+        .link { text-align: center; margin-top: 15px; color: #8899a6; font-size: 14px; }
+        .link a { color: #1da1f2; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🐦 Kenny Social</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        <form method="POST">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter your password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div class="link">Don't have an account? <a href="/register">Register</a></div>
+    </div>
+</body>
+</html>

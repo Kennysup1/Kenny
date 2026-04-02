@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home - Kenny </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #15202b; color: white; }
+        .navbar { background: #192734; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #38444d; position: sticky; top: 0; z-index: 100; }
+        .navbar h1 { color: #1da1f2; font-size: 20px; }
+        .nav-links a { color: #8899a6; text-decoration: none; margin-left: 15px; font-size: 14px; }
+        .nav-links a:hover { color: #1da1f2; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .compose { background: #192734; border: 1px solid #38444d; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .compose textarea { width: 100%; background: transparent; border: none; color: white; font-size: 18px; resize: none; height: 80px; outline: none; }
+        .compose textarea::placeholder { color: #4a5568; }
+        .compose-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #38444d; padding-top: 12px; margin-top: 12px; }
+        .char-count { color: #8899a6; font-size: 14px; }
+        .char-count.warning { color: #e0245e; }
+        .tweet-btn { background: #1da1f2; color: white; border: none; border-radius: 25px; padding: 10px 20px; font-size: 15px; cursor: pointer; font-weight: bold; }
+        .tweet-btn:hover { background: #1991db; }
+        .post { background: #192734; border: 1px solid #38444d; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .post-user { color: #1da1f2; text-decoration: none; font-weight: bold; }
+        .post-time { color: #8899a6; font-size: 13px; }
+        .post-content { color: #e7e9ea; font-size: 16px; line-height: 1.5; margin-bottom: 15px; }
+        .post-actions { display: flex; gap: 20px; }
+        .like-btn { background: none; border: none; color: #8899a6; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .like-btn:hover { color: #e0245e; }
+        .like-btn.liked { color: #e0245e; }
+        .delete-btn { background: none; border: none; color: #8899a6; cursor: pointer; font-size: 14px; }
+        .delete-btn:hover { color: #e0245e; }
+        .empty { text-align: center; color: #8899a6; padding: 40px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🐦 Kenny </h1>
+        <div class="nav-links">
+            <a href="/profile/{{ current_user.username }}">@{{ current_user.username }}</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="compose">
+            <form method="POST" action="/post">
+                <textarea name="content" id="tweet-input" placeholder="What's happening?" maxlength="280"
+                          oninput="updateCount(this.value.length)"></textarea>
+                <div class="compose-footer">
+                    <span class="char-count" id="char-count">280</span>
+                    <button type="submit" class="tweet-btn">Post</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="posts-feed">
+            {% if posts %}
+                {% for post in posts %}
+                <div class="post" id="post-{{ post.id }}">
+                    <div class="post-header">
+                        <a href="/profile/{{ post.author.username }}" class="post-user">@{{ post.author.username }}</a>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="post-time">{{ post.created_at.strftime('%b %d, %Y %H:%M') }}</span>
+                            {% if post.author.id == current_user.id %}
+                            <form method="POST" action="/delete/{{ post.id }}" style="display:inline;">
+                                <button class="delete-btn" title="Delete">✕</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="post-content">{{ post.content }}</div>
+                    <div class="post-actions">
+                        <button class="like-btn {% if post.id in liked_posts %}liked{% endif %}"
+                                onclick="likePost({{ post.id }}, this)">
+                            ❤️ <span>{{ post.likes|length }}</span>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">No posts yet! Be the first to post 🐦</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        function updateCount(len) {
+            const counter = document.getElementById('char-count');
+            counter.textContent = 280 - len;
+            counter.className = (280 - len) < 20 ? 'char-count warning' : 'char-count';
+        }
+
+        function likePost(postId, btn) {
+            fetch(`/like/${postId}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                btn.className = data.liked ? 'like-btn liked' : 'like-btn';
+                btn.querySelector('span').textContent = data.count;
+            });
+        }
+
+        socket.on('new_post', function(data) {
+            const feed = document.getElementById('posts-feed');
+            const empty = feed.querySelector('.empty');
+            if (empty) empty.remove();
+            const post = `
+            <div class="post" id="post-${data.id}">
+                <div class="post-header">
+                    <a href="/profile/${data.username}" class="post-user">@${data.username}</a>
+                    <span class="post-time">${data.time}</span>
+                </div>
+                <div class="post-content">${data.content}</div>
+                <div class="post-actions">
+                    <button class="like-btn" onclick="likePost(${data.id}, this)">
