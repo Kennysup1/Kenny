@@ -38,4 +38,4 @@ jupyter notebook
 ```
 
 ## Author
-**Kennysup1** — AI/ML Developer in training 🚀
+**Kennysup1** — AI/ML Developer🚀
