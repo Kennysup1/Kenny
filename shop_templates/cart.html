@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cart - Kenny Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #f68b1e; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { color: white; font-size: 24px; }
+        .navbar a { color: white; text-decoration: none; font-size: 14px; margin-left: 15px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .cart-items { background: white; border-radius: 4px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .cart-title { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f68b1e; }
+        .cart-item { display: grid; grid-template-columns: 80px 1fr auto; gap: 15px; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .item-img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; }
+        .item-name { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .item-price { color: #f68b1e; font-weight: bold; }
+        .item-qty { color: #999; font-size: 14px; }
+        .remove-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 20px; }
+        .summary { background: white; border-radius: 4px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: fit-content; }
+        .summary h3 { font-size: 18px; font-weight: bold; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f68b1e; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
+        .summary-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #f68b1e; padding-top: 10px; border-top: 2px solid #eee; margin-top: 10px; }
+        .checkout-btn { width: 100%; padding: 14px; background: #f68b1e; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        .checkout-btn:hover { background: #e07d10; }
+        .continue-btn { display: block; text-align: center; padding: 12px; background: white; color: #f68b1e; border: 2px solid #f68b1e; border-radius: 4px; text-decoration: none; font-size: 15px; font-weight: bold; margin-top: 10px; }
+        .empty { text-align: center; padding: 40px; color: #999; }
+        .empty a { color: #f68b1e; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🛍️ Kenny Shop</h1>
+        <div>
+            <a href="/">Home</a>
+            <a href="/orders">My Orders</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="cart-items">
+            <div class="cart-title">🛒 Shopping Cart ({{ items|length }} items)</div>
+            {% if items %}
+                {% for item in items %}
+                <div class="cart-item">
+                    <img src="{{ item.product.image }}" class="item-img">
+                    <div>
+                        <div class="item-name">{{ item.product.name }}</div>
+                        <div class="item-price">${{ item.product.price }}</div>
+                        <div class="item-qty">Quantity: {{ item.quantity }}</div>
+                    </div>
+                    <div>
+                        <div style="color:#f68b1e;font-weight:bold;margin-bottom:5px;">${{ item.subtotal }}</div>
+                        <form method="POST" action="/remove_from_cart/{{ item.product.id }}">
+                            <button class="remove-btn" title="Remove">🗑️</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty">
+                    <p style="font-size:40px;margin-bottom:15px;">🛒</p>
+                    <p style="font-size:18px;margin-bottom:10px;">Your cart is empty!</p>
+                    <a href="/">Continue Shopping</a>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if items %}
+        <div class="summary">
+            <h3>Order Summary</h3>
+            <div class="summary-row"><span>Subtotal</span><span>${{ total }}</span></div>
+            <div class="summary-row"><span>Delivery</span><span style="color:#27ae60;">FREE</span></div>
+            <div class="summary-total"><span>Total</span><span>${{ total }}</span></div>
+            <a href="/checkout"><button class="checkout-btn">CHECKOUT →</button></a>
+            <a href="/" class="continue-btn">← Continue Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

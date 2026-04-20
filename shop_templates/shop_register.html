@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - Kenny Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #f68b1e; padding: 12px 20px; }
+        .navbar h1 { color: white; font-size: 24px; }
+        .container { max-width: 400px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; padding: 30px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { color: #333; margin-bottom: 20px; font-size: 20px; }
+        label { display: block; color: #555; margin-bottom: 5px; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; margin-bottom: 15px; }
+        input:focus { outline: none; border-color: #f68b1e; }
+        button { width: 100%; padding: 12px; background: #f68b1e; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #e07d10; }
+        .alert { padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px; }
+        .alert.danger { background: #fff0f0; color: #e74c3c; border: 1px solid #e74c3c; }
+        .link { text-align: center; margin-top: 15px; color: #555; font-size: 14px; }
+        .link a { color: #f68b1e; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🛍️ Kenny Shop</h1>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>Create Your Account</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+            <form method="POST">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Choose a username" required>
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create a password" required>
+                <button type="submit">CREATE ACCOUNT</button>
+            </form>
+            <div class="link">Already have an account? <a href="/login">Login</a></div>
+        </div>
+    </div>
+</body>
+</html>

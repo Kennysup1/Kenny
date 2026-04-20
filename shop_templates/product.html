@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }} - Kenny Shop</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #f68b1e; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { color: white; font-size: 24px; }
+        .navbar a { color: white; text-decoration: none; font-size: 14px; margin-left: 15px; }
+        .cart-btn { background: white; color: #f68b1e; padding: 8px 15px; border-radius: 4px; font-weight: bold; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .breadcrumb { color: #999; font-size: 14px; margin-bottom: 20px; }
+        .breadcrumb a { color: #f68b1e; text-decoration: none; }
+        .product-detail { background: white; border-radius: 4px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .product-img { width: 100%; border-radius: 4px; }
+        .product-name { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .product-price { font-size: 28px; color: #f68b1e; font-weight: bold; margin-bottom: 5px; }
+        .product-old-price { color: #999; text-decoration: line-through; font-size: 16px; margin-bottom: 15px; }
+        .product-desc { color: #555; line-height: 1.6; margin-bottom: 20px; font-size: 15px; }
+        .stock { color: #27ae60; font-size: 14px; margin-bottom: 20px; }
+        .add-btn { width: 100%; padding: 14px; background: #f68b1e; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        .add-btn:hover { background: #e07d10; }
+        .back-btn { display: block; text-align: center; padding: 12px; background: white; color: #f68b1e; border: 2px solid #f68b1e; border-radius: 4px; text-decoration: none; font-size: 15px; font-weight: bold; }
+        .category-badge { background: #fff3e0; color: #f68b1e; padding: 4px 12px; border-radius: 20px; font-size: 13px; display: inline-block; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🛍️ Kenny Shop</h1>
+        <div>
+            <a href="/">Home</a>
+            <a href="/cart" class="cart-btn">🛒 Cart ({{ get_cart_count() }})</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="/">Home</a> › {{ product.category }} › {{ product.name }}
+        </div>
+        <div class="product-detail">
+            <div>
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-img">
+            </div>
+            <div>
+                <span class="category-badge">{{ product.category }}</span>
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-price">${{ product.price }}</div>
+                <div class="product-old-price">${{ (product.price * 1.2)|round(2) }} <span style="background:#e74c3c;color:white;padding:2px 6px;border-radius:3px;font-size:12px;">-20%</span></div>
+                <div class="product-desc">{{ product.description }}</div>
+                <div class="stock">✅ In Stock ({{ product.stock }} available)</div>
+                <form method="POST" action="/add_to_cart/{{ product.id }}">
+                    <button class="add-btn" type="submit">ADD TO CART 🛒</button>
+                </form>
+                <a href="/" class="back-btn">← Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
